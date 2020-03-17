@@ -75,22 +75,33 @@ def part1_load(dir1, dir2, n=1):
             del data_frame[column]
             
     return data_frame
-    
-def part2_vis(df, m):
+
+
+  
+def part2_vis(df, m=1):
     # DO NOT CHANGE
     assert isinstance(df, pd.DataFrame)
-    grouped_and_transposed_df = df.groupby(by=["directory"], sort=True).sum().T
-    print(grouped_and_transposed_df)
-
-# ADD ANY OTHER IMPORTS YOU LIKE
-
-
+    df_without_dir_and_name = df.drop(df.columns[[1, 2]], axis=1)#, inplace=True) #to get rid of the directory and file_name columns
+    df_rest = df_without_dir_and_name.sum().sort_values(ascending=False)
+    df_indexes = df_rest[m:]
+    df_top_m = df.drop(df_indexes.index, 1)
+    df_grouped_and_sorted= df_top_m.groupby(["Directory"]).sum().sort_values(df_top_m["Directory"][0], axis=1, ascending=False)
+    final_df_transposed = df_grouped_and_sorted.T
+    return final_df_transposed.plot(kind="bar")
+    
+    
 
 def part3_tfidf(df):
     # DO NOT CHANGE
     assert isinstance(df, pd.DataFrame)
-
-    # CHANGE WHAT YOU WANT HERE
-    return df #DUMMY RETURN
-
-# ADD WHATEVER YOU NEED HERE, INCLUDING BONUS CODE.
+    df_dir_and_name = df[:2]
+    df_with_counts_only = df[2:]
+    df_tfidf = df_with_counts_only.copy()
+    total_number_of_docs = len(df_tfidf)
+    for column in df_tfidf:
+        docs_without_term = df_tfidf[column].isin([0.0]).sum()
+        idf = total_number_of_docs/(total_number_of_docs - docs_without_term)
+        df_tfidf[column] = df_tfidf[column] * np.log(idf)
+    
+    final_df = df_dir_and_name.merge(df_tfidf)
+    return final_df
