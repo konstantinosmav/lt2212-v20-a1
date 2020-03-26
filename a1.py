@@ -33,9 +33,9 @@ def count_unique_words(dir1, dir2):
     for item in directories.items():
         full_file_path = item[0]
 
-        split_path = full_file_path.split('\\')
-        file_name = split_path[-1]
-        direc_name = '\\'.join(split_path[:-1])
+        split_path = full_file_path.split('/')
+        file_name = split_path[1]
+        direc_name = split_path[0]
         words = item[1]
         count_of_words = Counter(words)
         #print(count_of_words)
